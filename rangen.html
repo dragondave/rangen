@@ -1,0 +1,86 @@
+<html>
+  <head>
+    <script>
+      data = {}
+
+      data["root"] = [
+        "I have a pet {animal}", 
+        "I hate {animal}s"
+      ]
+      
+      data['animal'] = [
+        "{adjective} {noun}",
+        "{adjective} {adjective2} {noun}"
+      ]
+
+      data['adjective'] = [
+        "big",
+        "green",
+        "blue"
+      ]
+
+      data['noun'] = [
+        "cat",
+        "dog",
+        "velociraptor"
+      ]
+
+      duplicates = {
+        "adjective2": "adjective",
+        "adjective3": "adjective"
+      };
+
+      ////////////////// END OF USER EDITABLE CONTENT //////////////////
+
+      // https://stackoverflow.com/a/4673436/133227
+      String.prototype.formatUnicorn = String.prototype.formatUnicorn ||
+      function () {
+          "use strict";
+          var str = this.toString();
+          if (arguments.length) {
+              var t = typeof arguments[0];
+              var key;
+              var args = ("string" === t || "number" === t) ?
+                  Array.prototype.slice.call(arguments)
+                  : arguments[0];
+
+              for (key in args) {
+                  str = str.replace(new RegExp("\\{" + key + "\\}", "gi"), args[key]);
+              }
+          }
+
+          return str;
+      };
+
+      Array.prototype.randomElement = function () {
+        return this[Math.floor(Math.random() * this.length)]
+      }
+
+      function resolve() {
+        to_use = [];
+        for (item in data) {
+          to_use[item] = data[item].randomElement();
+        }
+        for (item in duplicates) {
+          to_use[item] = data[duplicates[item]].randomElement();
+        }
+        r = to_use['root'];
+        old_r = "";
+        while (r.includes("{") && old_r !== r) {
+            old_r = r
+            r = r.formatUnicorn(to_use)
+        }
+
+        return r;
+      }
+      
+      function gen() {
+        document.getElementById("textarea").value = resolve();
+      };
+    </script>
+  </head>
+  <body onLoad="gen()">
+    <textarea cols=50 rows=15 id=textarea></textarea>
+    <input type=button value="random" onClick="gen()"></input>
+  </body>
+</html>
